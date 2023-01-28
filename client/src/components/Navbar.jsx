@@ -71,7 +71,7 @@ const Navbar = () => {
           <li className="mx-4 my-6 md:my-0">
             <div
               className="text-[16px] text-white font-epilogue bg-[#1c1c24] py-[14px] px-[18px] 
-            rounded-[40px] hover:bg-[#FFC100] duration-1000 cursor-pointer"
+            rounded-[40px] hover:bg-[#FFC100] duration-1000 cursor-pointer w-[100px]"
               onClick={logOut}
             >
               Log Out

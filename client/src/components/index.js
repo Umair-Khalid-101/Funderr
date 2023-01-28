@@ -13,3 +13,4 @@ export { default as Transactions } from "./Transactions";
 export { default as Users } from "./Users";
 export { default as RequireAuth } from "./RequireAuth";
 export { default as DaysLeft } from "./DaysLeft";
+export { default as RecentDonations } from "./RecentDonations";

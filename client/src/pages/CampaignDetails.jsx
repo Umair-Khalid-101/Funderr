@@ -43,7 +43,7 @@ const CampaignDetails = ({ campaignDonations }) => {
         <div className="min-h-screen md:col-span-2 w-full">
           {/* Title */}
           <h1
-            className="mt-[40px] text-5xl xl:ml-[100px] lg:ml-[50px] 
+            className="mt-[40px] md:text-5xl text-3xl xl:ml-[100px] lg:ml-[50px] 
           md:ml-[80px] ml-[40px] md:mb-[10px] mb-[20px]"
           >
             {state.title}
@@ -106,10 +106,12 @@ const CampaignDetails = ({ campaignDonations }) => {
           <div
             className="flex items-center gap-4
           xl:ml-[100px] lg:ml-[50px] md:ml-[80px] 
-          ml-[10px] mt-[20px]"
+          ml-[10px] mt-[20px]  w-[300px]"
           >
             <div className="text-[20px] font-semibold">Wallet Address</div>
-            <div className="text-[18px]">{state.walletAddress}</div>
+            <div className="text-[18px] w-[300px] overflow-hidden">
+              {state.walletAddress}
+            </div>
           </div>
 
           <div
@@ -152,6 +154,7 @@ const CampaignDetails = ({ campaignDonations }) => {
             state={state}
             progress={percentage}
             raised={raised?.toFixed(2)}
+            campaignDonations={campaignDonations}
           />
         }
         {/* Card with Action Buttons */}
