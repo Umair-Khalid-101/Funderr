@@ -276,8 +276,48 @@ const deleteFromFeatured = async (req, res, next) => {
 };
 
 const mobileCreateCampaign = async (req, res, next) => {
+  let cloudinaryImage;
   if (req.files) {
-    res.json({ message: "Picture included" });
+    const file = req.files.file;
+    await cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
+      cloudinaryImage = result.url;
+      // console.log(cloudinaryImage);
+    });
+
+    const {
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+    } = req.body;
+    const post = new posts({
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture: cloudinaryImage,
+    });
+
+    try {
+      await post.save();
+    } catch (error) {
+      console.log(error);
+    }
+    return res.status(201).json(post);
   } else {
     const {
       title,
@@ -316,6 +356,93 @@ const mobileCreateCampaign = async (req, res, next) => {
   }
 };
 
+const mobileEditCampaign = async (req, res, next) => {
+  let cloudinaryImage;
+  if (req.files) {
+    const file = req.files.file;
+    await cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
+      cloudinaryImage = result.url;
+      // console.log(cloudinaryImage);
+    });
+
+    const id = req.params.id;
+    const {
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+    } = req.body;
+    const updates = {
+      title,
+      description,
+      enddate,
+      startdate,
+      campaignGoal,
+      posterName,
+      postedBy,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture: cloudinaryImage,
+    };
+    const options = { new: true };
+    // console.log(updates);
+
+    try {
+      const result = await posts.findByIdAndUpdate(id, updates, options);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    const id = req.params.id;
+    const {
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture,
+    } = req.body;
+    const updates = {
+      title,
+      description,
+      enddate,
+      startdate,
+      campaignGoal,
+      posterName,
+      postedBy,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture,
+    };
+    const options = { new: true };
+    // console.log(updates);
+    try {
+      const result = await posts.findByIdAndUpdate(id, updates, options);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
 exports.addPost = addPost;
 exports.getPosts = getPosts;
 exports.getUserPosts = getUserPosts;
@@ -332,3 +459,4 @@ exports.postByCategory = postByCategory;
 exports.featuredPostsById = featuredPostsById;
 exports.deleteFromFeatured = deleteFromFeatured;
 exports.mobileCreateCampaign = mobileCreateCampaign;
+exports.mobileEditCampaign = mobileEditCampaign;

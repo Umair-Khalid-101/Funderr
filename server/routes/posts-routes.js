@@ -16,6 +16,7 @@ const {
   featuredPostsById,
   deleteFromFeatured,
   mobileCreateCampaign,
+  mobileEditCampaign,
 } = require("../controllers/postsController");
 const authmiddleware = require("../middleware/auth");
 const router = express.Router();
@@ -36,5 +37,6 @@ router.delete("/deletefromfav/:id", deleteFavPost);
 router.get("/userfavposts", authmiddleware, getUserFavPosts);
 router.delete("/deletefeatured/:id", deleteFromFeatured);
 router.post("/createcampaign", mobileCreateCampaign);
+router.put("/editcampaign/:id", mobileEditCampaign);
 
 module.exports = router;

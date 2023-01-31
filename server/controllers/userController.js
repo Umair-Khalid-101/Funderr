@@ -107,13 +107,13 @@ const mobileRegister = async (req, res, next) => {
   // console.log(req);
   // console.log(req.files.file);
   let user = await User.findOne({ email: req.body.email });
-  if (user) return res.status(400).send("User Already Registered.");
+  if (user) return res.status(400).json({ message: "User Already registered" });
   let cloudinaryImage;
   if (req.files) {
     const file = req.files.file;
     await cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
       cloudinaryImage = result.url;
-      console.log(cloudinaryImage);
+      // console.log(cloudinaryImage);
     });
     user = new User({
       name: req.body.name,
@@ -135,7 +135,6 @@ const mobileRegister = async (req, res, next) => {
       role: req.body.role,
       picture: req.body.picture,
     });
-    console.log("User:", user);
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
 
@@ -147,9 +146,60 @@ const mobileRegister = async (req, res, next) => {
     .json(_.pick(user, ["_id", " name", "email", "role", "picture"]));
 };
 
+const updateMobileProfile = async (req, res, next) => {
+  if (req.files) {
+    const file = req.files.file;
+    let cloudinaryImage;
+    await cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
+      cloudinaryImage = result.url;
+      console.log(cloudinaryImage);
+    });
+    const id = req.params.id;
+    const options = { new: true };
+
+    try {
+      const result = await User.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            name: req.body.name,
+            email: req.body.email,
+            picture: cloudinaryImage,
+          },
+        },
+        options
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  } else {
+    const id = req.params.id;
+    const options = { new: true };
+    // console.log(req.body);
+    try {
+      const result = await User.findByIdAndUpdate(
+        id,
+        {
+          $set: {
+            name: req.body.name,
+            email: req.body.email,
+            picture: req.body.picture,
+          },
+        },
+        options
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+};
+
 exports.register = register;
 exports.auth = auth;
 exports.currentUser = currentUser;
 exports.updateProfile = updateProfile;
 exports.facebookSignup = facebookSignup;
 exports.mobileRegister = mobileRegister;
+exports.updateMobileProfile = updateMobileProfile;
