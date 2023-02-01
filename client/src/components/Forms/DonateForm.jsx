@@ -42,8 +42,15 @@ const useYupValidationResolver = (formSchema) =>
   );
 
 const formSchema = Yup.object().shape({
-  to: Yup.string().required("This field cannot be empty"),
-  amount: Yup.string().required("This field cannot be empty"),
+  to: Yup.string()
+    .required("Wallet Address is mandatory")
+    .matches(/^0x[a-fA-F0-9]{40}$/g, "Please Provide a Valid Wallet Address"),
+  amount: Yup.string()
+    .required("Amount is mandatory")
+    .matches(
+      /^(?!0+(?:\.0+)?$)\d+(?:\.\d+)?$/,
+      "Please provide a Valid Amount"
+    ),
   Terms: Yup.bool().oneOf([true], "Please Read and Check T&C's"),
 });
 
