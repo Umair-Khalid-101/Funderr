@@ -7,10 +7,16 @@ import { useStateContext } from "../context";
 
 const Featured = () => {
   const navigate = useNavigate();
-  const { featuredCampaigns } = useStateContext();
+  const { featuredCampaigns, user } = useStateContext();
 
   const handleNavigate = (campaign) => {
-    navigate(`/Details/${campaign.title}`, { state: campaign });
+    if (user) {
+      navigate(`/Details/${campaign.title}`, { state: campaign });
+    } else {
+      toast.warn("Please Login to see details!", {
+        position: "top-left",
+      });
+    }
   };
 
   return (

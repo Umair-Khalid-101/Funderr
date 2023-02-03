@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 
 import { useStateContext } from "../../context";
 import { CampaignCard, Loader } from "../../components";
+import { search } from "../../assets";
 
 const MyCampaigns = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState("");
   const { setUserCampaigns, getUserCampaigns, userCampaigns, deleteCampaign } =
     useStateContext();
 
@@ -31,6 +33,11 @@ const MyCampaigns = () => {
     });
     // eslint-disable-next-line
   }, []);
+
+  // SEARCH FUNCTION
+  const handleSearch = (event) => {
+    setSearchInput(event.target.value);
+  };
 
   if (isLoading) {
     return (
@@ -68,6 +75,26 @@ const MyCampaigns = () => {
 
   return (
     <>
+      <div
+        className="xl:w-[90vw] lg:w-[85vw] md:w-[80vw] w-[75vw]
+      flex justify-end"
+      >
+        <div className="lg:flex-1 flex flex-row max-w-[458px] py-2 pl-4 pr-2 h-[52px] bg-[#1c1c24] rounded-[100px]">
+          <input
+            type="text"
+            placeholder="Search My Campaigns"
+            className="flex w-full font-epilogue font-normal text-[14px] placeholder:text-[#4b5264] text-white bg-transparent outline-none"
+            onChange={handleSearch}
+          />
+          <div className="w-[72px] h-full rounded-[20px] bg-[#4acd8d] flex justify-center items-center cursor-pointer">
+            <img
+              src={search}
+              alt="search"
+              className="w-[15px] h-[15px] object-contain"
+            />
+          </div>
+        </div>
+      </div>
       <div className="text-[18px] font-epilogue xl:w-[90vw] lg:w-[85vw] md:w-[80vw] w-[75vw] my-[20px]">
         My Campaigns ({userCampaigns.length})
       </div>
@@ -75,23 +102,33 @@ const MyCampaigns = () => {
         className="grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 xl:pr-[-30px] 
     lg:pl-[50px] lg:w-[80vw] md:w-[80vw] sm:ml-[20px] h-full"
       >
-        {userCampaigns.map((campaign) => (
-          <div key={Math.random()} className="md:w-[300px] md:pl-[20px]">
-            <CampaignCard
-              imgUrl={campaign.picture}
-              title={campaign.title}
-              userpic={campaign.posterPic}
-              username={campaign.posterName}
-              startdate={campaign.startdate}
-              target={campaign.campaignGoal}
-              description={campaign.description}
-              type="MyCampaigns"
-              handleClick={() => handleNavigate(campaign)}
-              handleDelete={() => handleDelete(campaign._id)}
-              permission={campaign.permission}
-            />
-          </div>
-        ))}
+        {userCampaigns
+          .filter((campaign) => {
+            if (searchInput === "") {
+              return campaign;
+            } else if (
+              campaign.title.toLowerCase().includes(searchInput.toLowerCase())
+            ) {
+              return campaign;
+            }
+          })
+          .map((campaign) => (
+            <div key={Math.random()} className="md:w-[300px] md:pl-[20px]">
+              <CampaignCard
+                imgUrl={campaign.picture}
+                title={campaign.title}
+                userpic={campaign.posterPic}
+                username={campaign.posterName}
+                startdate={campaign.startdate}
+                target={campaign.campaignGoal}
+                description={campaign.description}
+                type="MyCampaigns"
+                handleClick={() => handleNavigate(campaign)}
+                handleDelete={() => handleDelete(campaign._id)}
+                permission={campaign.permission}
+              />
+            </div>
+          ))}
       </div>
     </>
   );

@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 import { useStateContext } from "../context";
+import { RecentDonations } from "../components";
 
 const DaysLeft = ({
   deadline,
@@ -11,6 +12,7 @@ const DaysLeft = ({
   state,
   progress,
   raised,
+  campaignDonations,
 }) => {
   const { user } = useStateContext();
   const [remainingDays, setRemainingDays] = useState();
@@ -129,8 +131,12 @@ const DaysLeft = ({
                 </div>
                 {/* buttons */}
               </div>
+              <div>
+                <RecentDonations campaignDonations={campaignDonations} />
+              </div>
             </div>
           </div>
+          {/* Card with Action Buttons */}
         </>
       ) : (
         ""

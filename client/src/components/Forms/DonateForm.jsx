@@ -42,8 +42,15 @@ const useYupValidationResolver = (formSchema) =>
   );
 
 const formSchema = Yup.object().shape({
-  to: Yup.string().required("This field cannot be empty"),
-  amount: Yup.string().required("This field cannot be empty"),
+  to: Yup.string()
+    .required("Wallet Address is mandatory")
+    .matches(/^0x[a-fA-F0-9]{40}$/g, "Please Provide a Valid Wallet Address"),
+  amount: Yup.string()
+    .required("Amount is mandatory")
+    .matches(
+      /^(?!0+(?:\.0+)?$)\d+(?:\.\d+)?$/,
+      "Please provide a Valid Amount"
+    ),
   Terms: Yup.bool().oneOf([true], "Please Read and Check T&C's"),
 });
 
@@ -87,7 +94,7 @@ const DonateForm = () => {
         value: ethers.utils.parseEther(ether),
       });
       // console.log({ ether, addr });
-      console.log("tx", tx);
+      // console.log("tx", tx);
       // console.log("Amount: ", tx.value._hex);
       let valueInWei = new BigNumber(tx.value._hex, 16);
       let valueInEther = valueInWei.div(1e18).toString(10);
@@ -108,7 +115,14 @@ const DonateForm = () => {
       }, 2000);
       setTxs([tx]);
     } catch (err) {
-      toast.error(`${err.toString().split("[")[0]}`, {
+      let input = err.toString();
+      let result;
+      if (input.includes("[") || input.includes("(")) {
+        result = input.split(/[\[\(]/)[0];
+      } else {
+        result = input;
+      }
+      toast.error(`${result}`, {
         position: "top-left",
       });
       // console.log("Error: ", err);

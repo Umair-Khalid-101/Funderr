@@ -1,8 +1,15 @@
+const dotenv = require("dotenv");
+dotenv.config();
 const posts = require("../models/posts");
 const favPost = require("../models/favorites");
 const featured = require("../models/featured");
-const dotenv = require("dotenv");
-dotenv.config();
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const addPost = async (req, res, next) => {
   const {
@@ -268,6 +275,174 @@ const deleteFromFeatured = async (req, res, next) => {
   }
 };
 
+const mobileCreateCampaign = async (req, res, next) => {
+  let cloudinaryImage;
+  if (req.files) {
+    const file = req.files.file;
+    await cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
+      cloudinaryImage = result.url;
+      // console.log(cloudinaryImage);
+    });
+
+    const {
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+    } = req.body;
+    const post = new posts({
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture: cloudinaryImage,
+    });
+
+    try {
+      await post.save();
+    } catch (error) {
+      console.log(error);
+    }
+    return res.status(201).json(post);
+  } else {
+    const {
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture,
+    } = req.body;
+    const post = new posts({
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture,
+    });
+    try {
+      await post.save();
+    } catch (error) {
+      console.log(error);
+    }
+    return res.status(201).json(post);
+  }
+};
+
+const mobileEditCampaign = async (req, res, next) => {
+  let cloudinaryImage;
+  if (req.files) {
+    const file = req.files.file;
+    await cloudinary.uploader.upload(file.tempFilePath, async (err, result) => {
+      cloudinaryImage = result.url;
+      // console.log(cloudinaryImage);
+    });
+
+    const id = req.params.id;
+    const {
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+    } = req.body;
+    const updates = {
+      title,
+      description,
+      enddate,
+      startdate,
+      campaignGoal,
+      posterName,
+      postedBy,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture: cloudinaryImage,
+    };
+    const options = { new: true };
+    // console.log(updates);
+
+    try {
+      const result = await posts.findByIdAndUpdate(id, updates, options);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+    }
+  } else {
+    const id = req.params.id;
+    const {
+      title,
+      description,
+      enddate,
+      postedBy,
+      startdate,
+      campaignGoal,
+      posterName,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture,
+    } = req.body;
+    const updates = {
+      title,
+      description,
+      enddate,
+      startdate,
+      campaignGoal,
+      posterName,
+      postedBy,
+      walletAddress,
+      permission,
+      posterPic,
+      category,
+      picture,
+    };
+    const options = { new: true };
+    // console.log(updates);
+    try {
+      const result = await posts.findByIdAndUpdate(id, updates, options);
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+};
+
 exports.addPost = addPost;
 exports.getPosts = getPosts;
 exports.getUserPosts = getUserPosts;
@@ -283,3 +458,5 @@ exports.getFeatured = getFeatured;
 exports.postByCategory = postByCategory;
 exports.featuredPostsById = featuredPostsById;
 exports.deleteFromFeatured = deleteFromFeatured;
+exports.mobileCreateCampaign = mobileCreateCampaign;
+exports.mobileEditCampaign = mobileEditCampaign;
